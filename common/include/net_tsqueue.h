@@ -1,5 +1,5 @@
 #pragma once
-#include "netCommon.h"
+#include "net_common.h"
 
 namespace olc{
     namespace net{
@@ -8,6 +8,7 @@ namespace olc{
             public:
             tsqueue() = default;
             tsqueue(const tsqueue <T>&) = delete;
+            virtual ~tsqueue() { clear();}
 
             const T& front(){
                 std::scoped_lock lock(muxQueue);
@@ -49,6 +50,6 @@ namespace olc{
             protected:
             std::mutex muxQueue;
             std::deque<T> deqQueue;
-        }
+        };
     }
 }

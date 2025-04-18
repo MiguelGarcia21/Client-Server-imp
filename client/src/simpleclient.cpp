@@ -4,7 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include ".../olc_net.h"
+#include "olc_net.h"
 
 enum class CustomMsgTypes : uint32_t{
     FireBullet,
@@ -17,11 +17,11 @@ class CustomClient : public olc::net::client_interface<CustomMsgTypes>{
         olc::net::message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::FireBullet;
         msg << x << y;
-        Send(msg);
+        //Send(msg); TODO
     }
 };
 
 int main(){
-    CustomClient c;
-    c.connect("website.com", 60000);
+    //CustomClient c;                       TODO
+    //c.connect("website.com", 60000);
 }

@@ -27,15 +27,36 @@ namespace olc{
 
             public:
             bool connect(const std::string& host, const uint16_t port){
-                return false;
+                try{
+                    m_connection = std::make_unique<connection<T>>();
+                    boost::asio::ip::tcp::resolver resolver(m_context);
+                    m_endpoints = resolver.resolve(host, std::to_string(port));
+                    m_connection->ConnectToServer(m_endpoints);
+                    thrContext = std::thread([this]() { m_connection.run(); });
+                } catch(std::exception& e){
+                    std::cerr << "Client Exception: " << e.what() << "\n";
+                    return false;
+                }
+                return true;
             }
 
             void disconnect(){
-
+                if(isConnected){
+                    m_connection->disconnect();
+                }
+                m_context.stop();
+                if(thrContext.joinable()){
+                    thrContext.join();
+                }
+                m_connection.release();
             }
 
             bool isConnected(){
-
+                if(m_connection){
+                    return m_connection->isConnected();
+                } else{
+                    return false;
+                }
             }
 
             tsqueue<owned_message<T>>& Incoming(){
