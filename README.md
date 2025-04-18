@@ -9,6 +9,12 @@ This is a C++ client-server application using TCP sockets, built to learn and ex
 - Demonstrates synchronous and asynchronous communication patterns
 - Uses a thread-safe queue to handle incoming/outgoing messages
 
+## 🔄 Currently working on:
+- Improve message handling
+- Add proper logging
+- Handle disconnects
+- Add multiclient support
+
 > 🚧 **Work in Progress**  
 > This project is actively being developed and is not yet complete.
 
