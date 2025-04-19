@@ -10,8 +10,8 @@ namespace olc{
         class server_interface{
             public:
             server_interface(uint16_t port) 
-                :m_asioAcceptor(m_asioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
-            {
+                :m_asioAcceptor(m_asioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
+                port)){
 
             }
 
@@ -43,21 +43,68 @@ namespace olc{
             //ASINC function
             void WaitForClientConnection(){
                 m_asioAcceptor.async_accept(
-                    [this](std::error_code ec, boost::asio::tcp::socket socket){
+                    [this](std::error_code ec, boost::asio::ip::tcp::socket socket){
                         if(!ec){
                             std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
-                            std::shared_ptr<connection<T>> newconn =
+                            /*std::shared_ptr<connection<T>> newconn =
                                 std::make_shared<connection<T>>(connection<T>::owner::server,
-                                    m_asioContext, std::move(socket), m_qMessages_in);
+                                    m_asioContext, std::move(socket), m_qMessages_in);*/
+
+                               /* if(OnClientConnect(newconn)){
+                                    m_deqConnections.push_back(std::move(newconn));
+                                    m_deqConnections.back()->ConnectToClient(nIDCounter++);
+                                    std::cout << "[" << m_deqConnections.back()->GetID() << "] Connection Approved\n";
+                                } else{
+                                    std::cout << "Connection denied\n";
+                                }*/
                         } else{
-                            std::cout << "[SERVER] New Connection Error: " << ex.message() << "\n";
+                            std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
                         }
+                        
+                        WaitForClientConnection(); //wait for a new connection in (asio context)
                     }
-                )
+                );
             }
 
+            void MessageClient(std::shared_ptr<connection<T>> client, const message<T>& msg){
+                if(client && client->IsConnected()){
+                    client->Send(msg);
+                }else{
+                    OnClientDisconnect(client);
+                    client.reset();
+                    m_deqConnections.erase(
+                        std::remove(m_deqConnections.begin(), m_deqConnections.end(), client), m_deqConnections.end());
+                }
+            }
             void MessageAllClients(const message<T>& msg, std::shared_ptr<connection<T>> pIgnoreClient = nullptr){
+                bool bInvalidClientExist = false;
+                for(auto& client : m_deqConnections){
+                    if(client && client->isConnected()){
+                        if(client != pIgnoreClient){
+                            client->Send(msg);
+                        }
+                    } else{
+                        OnClientDisconnect(client);
+                        client.reset();
+                        bInvalidClientExist = true;
+                    }
+                }
+                if(bInvalidClientExist){
+                    m_deqConnections.erase(
+                        std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr), m_deqConnections.end()
+                    );
+                }
+            }
 
+            void Update(size_t nMaxMessages = -1, bool bWait = false){
+                if(bWait) m_qMessages_in.wait();
+                size_t nMessageCount = 0;
+                while(nMessageCount < nMaxMessages && !m_qMessages_in.empty()){
+                    auto msg = m_qMessages_in.pop_front();
+                    OnMessage(msg.remote, msg.msg);
+
+                    nMessageCount++;
+                }
             }
 
             protected:
@@ -65,12 +112,17 @@ namespace olc{
                 return false;
             }
 
-            virtual void OnClientDisconnect(std::shared_ptr<connection<T>> client, message<T>& msg){
+            virtual void OnClientDisconnect(std::shared_ptr<connection<T>> client){
+
+            }
+
+            virtual void OnMessage(std::shared_ptr<connection<T>> client, message<T>& msg){
 
             }
 
             tsqueue<owned_message<T>> m_qMessages_in;
-            boost::asio::iocontext m_asioContext;
+            std::deque<std::shared_ptr<connection<T>>> m_deqConnections;
+            boost::asio::io_context m_asioContext;
             std::thread m_threadContext;
 
             boost::asio::ip::tcp::acceptor m_asioAcceptor;

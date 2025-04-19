@@ -21,7 +21,7 @@ void GrabSomeData(boost::asio::ip::tcp::socket &socket){
         }
     );
 }
-
+/*
 int main() {
     boost::asio::io_context context;
     boost::system::error_code ec;
@@ -61,4 +61,4 @@ int main() {
     }
     system("pause");
     return 0;
-}
+}*/

@@ -47,9 +47,34 @@ namespace olc{
                 return t;
             }
 
+            T pop_back()
+			{
+				std::scoped_lock lock(muxQueue);
+				auto t = std::move(deqQueue.back());
+				deqQueue.pop_back();
+				return t;
+			}
+
+            bool empty()
+			{
+				std::scoped_lock lock(muxQueue);
+				return deqQueue.empty();
+			}
+
+			void wait()
+			{
+				while (empty())
+				{
+					std::unique_lock<std::mutex> ul(muxBlocking);
+					cvBlocking.wait(ul);
+				}
+			}
+
             protected:
             std::mutex muxQueue;
             std::deque<T> deqQueue;
+            std::condition_variable cvBlocking;
+			std::mutex muxBlocking;
         };
     }
 }
