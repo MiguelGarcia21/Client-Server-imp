@@ -1,4 +1,4 @@
-# 🧪 Test Case 2: Simulate Client Connection with PuTTY
+# 🧪 Test Case 1: Simulate Client Connection with PuTTY
 
 **📅 Date:** 2025-04-19 
 **🧰 Environment:**
@@ -35,22 +35,16 @@ Simulate a TCP client connection to the server using PuTTY and verify that the s
 ---
 
 ## 📸 Screenshot  
-`test2_putty_connection.png`_  
-```bash
-docs/test2_putty_connection.png
-```
-
-Markdown:
-```markdown
-![PuTTY Connection](./test2_putty_connection.png)
-```
-
+![test2_putty_connection](https://github.com/user-attachments/assets/108159fa-a975-4a1c-ba18-c50243e0d8c0)
 ---
+![test2_putty_connection2](https://github.com/user-attachments/assets/ec555b72-b265-468a-a220-a68d505f76d7)
+
 
 ## 🧾 Server Log Output  
 ```
-[INFO] Server started on port 60000
-[INFO] Connection from: 127.0.0.1
+[SERVER] Started
+[SERVER] New Connection: 127.0.0.1:XXXXX
+[10000] Connection Approved
 ```
 
 ---
