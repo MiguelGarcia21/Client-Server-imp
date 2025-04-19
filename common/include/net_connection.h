@@ -23,6 +23,13 @@ namespace olc{
 
             uint32_t GetID() const { return id; }
 
+            void ConnectToClient(uint32_t uid = 0){
+                if(m_nOwnerType == owner::server){
+                    if(m_socket.is_open()){
+                        id = uid;
+                    }
+                }
+            }
             bool ConnectToServer() {return true;}
             bool Disconnect() {
                 if (isConnected())

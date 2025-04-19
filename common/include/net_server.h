@@ -46,17 +46,17 @@ namespace olc{
                     [this](std::error_code ec, boost::asio::ip::tcp::socket socket){
                         if(!ec){
                             std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
-                            /*std::shared_ptr<connection<T>> newconn =
+                            std::shared_ptr<connection<T>> newconn =
                                 std::make_shared<connection<T>>(connection<T>::owner::server,
-                                    m_asioContext, std::move(socket), m_qMessages_in);*/
+                                    m_asioContext, std::move(socket), m_qMessages_in);
 
-                               /* if(OnClientConnect(newconn)){
+                                if(OnClientConnect(newconn)){
                                     m_deqConnections.push_back(std::move(newconn));
                                     m_deqConnections.back()->ConnectToClient(nIDCounter++);
                                     std::cout << "[" << m_deqConnections.back()->GetID() << "] Connection Approved\n";
                                 } else{
                                     std::cout << "Connection denied\n";
-                                }*/
+                                }
                         } else{
                             std::cout << "[SERVER] New Connection Error: " << ec.message() << "\n";
                         }
