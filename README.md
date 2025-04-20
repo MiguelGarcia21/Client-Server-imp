@@ -26,6 +26,8 @@ The first test verifies that a client can successfully establish a connection wi
 
 🧪 **Result:** Connection established successfully and logged on the server side.
 
+---
+### Test 2: Client-Server & Client-Client communication output
 
 > 🚧 **Work in Progress**  
 > This project is actively being developed and is not yet complete.
