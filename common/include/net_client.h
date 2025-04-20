@@ -17,8 +17,6 @@ namespace olc
 				// If the client is destroyed, always try and disconnect from server
 				Disconnect();
 			}
-
-		public:
 			// Connect to server with hostname/ip-address and port
 			bool Connect(const std::string& host, const uint16_t port)
 			{
@@ -49,7 +47,7 @@ namespace olc
 			void Disconnect()
 			{
 				// If connection exists, and it's connected then...
-				if(IsConnected())
+				if(isConnected())
 				{
 					// ...disconnect from server gracefully
 					m_connection->Disconnect();
@@ -66,20 +64,20 @@ namespace olc
 			}
 
 			// Check if client is actually connected to a server
-			bool IsConnected()
+			bool isConnected()
 			{
 				if (m_connection)
-					return m_connection->IsConnected();
+					return m_connection->isConnected();
 				else
 					return false;
 			}
 
 		public:
 			// Send message to server
-			void Send(const message<T>& msg)
-			{
-				if (IsConnected())
-					 m_connection->Send(msg);
+			void Send(const message<T>& msg){
+				if (isConnected()){
+					m_connection->Send(msg);
+				}
 			}
 
 			// Retrieve queue of messages from server

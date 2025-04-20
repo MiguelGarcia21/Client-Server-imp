@@ -27,10 +27,22 @@ namespace olc{
                 if(m_nOwnerType == owner::server){
                     if(m_socket.is_open()){
                         id = uid;
+                        ReadHeader();
                     }
                 }
             }
-            bool ConnectToServer() {return true;}
+            bool ConnectToServer(const boost::asio::ip::tcp::resolver::results_type& endpoints) {
+                if (m_nOwnerType == owner::client){
+                    boost::asio::async_connect(m_socket,endpoints,
+                    [this](std::error_code ec, boost::asio::ip::tcp::endpoint endpoint){
+                        if(!ec){
+                            ReadHeader();
+                        }
+                    });
+                }
+                return true;
+            }
+
             bool Disconnect() {
                 if (isConnected())
                     boost::asio::post(m_asioContext, [this]() { m_socket.close(); });
@@ -40,8 +52,91 @@ namespace olc{
             bool isConnected() const { return m_socket.is_open(); }
 
             void Send(const message<T>& msg) {
+                boost::asio::post(m_asioContext, 
+                [this, msg](){
+                    bool bWritingMessage = !m_qMessages_out.empty();
+                    m_qMessages_out.push_back(msg);
+                    if (!bWritingMessage){
+                        WriteHeader();
+                    }
+                });
+            }
 
-            };
+            private:
+            //ASYNC FUNCTIONS
+            void ReadHeader(){
+                boost::asio::async_read(m_socket, boost::asio::buffer(&m_msgTemporary_in.header, sizeof(message_header<T>)),
+                                        [this](std::error_code ec, std::size_t length){
+                                            if(!ec){
+                                                if(m_msgTemporary_in.header.size > 0){
+                                                    m_msgTemporary_in.body.resize(m_msgTemporary_in.header.size);
+                                                    ReadBody();
+                                                } else{
+                                                    AddToIncomingMessageQueue();
+                                                }
+                                            }else{
+                                                std::cout << "[" << id << "] Read Header Fail.\n";
+                                                m_socket.close();
+                                            }
+                                        });
+            }
+
+            void ReadBody(){
+                boost::asio::async_read(m_socket, boost::asio::buffer(m_msgTemporary_in.body.data(), m_msgTemporary_in.body.size()),
+                [this](std::error_code ec, std::size_t length){
+                
+                    if(!ec){
+                        AddToIncomingMessageQueue();
+                    } else{
+                        std::cout << "[" << id << "] Read Header Fail.\n";
+                        m_socket.close();
+                    }
+                }
+                );
+            }
+
+            void WriteBody(){
+                boost::asio::async_write(m_socket, boost::asio::buffer(m_qMessages_out.front().body.data(), m_qMessages_out.front().body.size()),
+                [this](std::error_code ec, std::size_t length){
+                    if(!ec){
+                        m_qMessages_out.pop_front();
+                        if(!m_qMessages_out.empty()){
+                            WriteHeader();
+                        }
+                    } else {
+                        std::cout << "[" << id << "] Write Body Fail. \n";
+                        m_socket.close();
+                    }
+                });
+            }
+
+            void WriteHeader(){
+                boost::asio::async_write(m_socket, boost::asio::buffer(&m_qMessages_out.front().header, sizeof(message_header<T>)),
+                [this](std::error_code ec, std::size_t length){
+                    if (!ec){
+                        if(m_qMessages_out.front().body.size() > 0){
+                            WriteBody();
+                        } else{
+                            m_qMessages_out.pop_front();
+                            if (!m_qMessages_out.empty()){
+                                WriteHeader();
+                            }
+                        }
+                    } else {
+                        std::cout << "[" << id << "] Write Header Fail.\n";
+                        m_socket.close();
+                    }
+                });
+            }
+
+            void AddToIncomingMessageQueue(){
+                if(m_nOwnerType == owner::server){
+                    m_qMessages_in.push_back({this->shared_from_this(), m_msgTemporary_in});
+                } else{
+                    m_qMessages_in.push_back({nullptr, m_msgTemporary_in});
+                }
+                ReadHeader();
+            }
 
             protected:
             boost::asio::ip::tcp::socket m_socket;
