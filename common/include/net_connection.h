@@ -31,7 +31,7 @@ namespace olc{
                     }
                 }
             }
-            bool ConnectToServer(const boost::asio::ip::tcp::resolver::results_type& endpoints) {
+            void ConnectToServer(const boost::asio::ip::tcp::resolver::results_type& endpoints) { //corrected to void
                 if (m_nOwnerType == owner::client){
                     boost::asio::async_connect(m_socket,endpoints,
                     [this](std::error_code ec, boost::asio::ip::tcp::endpoint endpoint){
@@ -40,13 +40,11 @@ namespace olc{
                         }
                     });
                 }
-                return true;
             }
 
-            bool Disconnect() {
+            void Disconnect() { // corrected to void
                 if (isConnected())
                     boost::asio::post(m_asioContext, [this]() { m_socket.close(); });
-                    return true;
                 }
 
             bool isConnected() const { return m_socket.is_open(); }

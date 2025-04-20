@@ -9,11 +9,9 @@ namespace olc
 		class client_interface
 		{
 		public:
-			client_interface() 
-			{}
+			client_interface() {}
 
-			virtual ~client_interface()
-			{
+			virtual ~client_interface(){
 				// If the client is destroyed, always try and disconnect from server
 				Disconnect();
 			}
