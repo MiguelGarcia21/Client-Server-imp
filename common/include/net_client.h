@@ -42,38 +42,28 @@ namespace olc
 			}
 
 			// Disconnect from server
-			void Disconnect()
-			{
-				// If connection exists, and it's connected then...
-				if(isConnected())
-				{
-					// ...disconnect from server gracefully
-					m_connection->Disconnect();
+			void Disconnect() {
+				if (IsConnected()) {
+					m_connection->CloseSocket(); // Usamos el nuevo método público
 				}
-
-				// Either way, we're also done with the asio context...				
 				m_context.stop();
-				// ...and its thread
 				if (thrContext.joinable())
 					thrContext.join();
-
-				// Destroy the connection object
 				m_connection.release();
 			}
-
 			// Check if client is actually connected to a server
-			bool isConnected()
+			bool IsConnected()
 			{
 				if (m_connection)
 					return m_connection->isConnected();
 				else
 					return false;
-			}
+			}	
 
 		public:
 			// Send message to server
 			void Send(const message<T>& msg){
-				if (isConnected()){
+				if (IsConnected()){
 					m_connection->Send(msg);
 				}
 			}

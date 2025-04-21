@@ -20,6 +20,13 @@ namespace olc{
             virtual ~connection(){
 
             }
+            public:
+            void CloseSocket() { // added for debug
+                if (m_socket.is_open()) {
+                    m_socket.close();
+                }
+            }
+
 
             uint32_t GetID() const { return id; }
 

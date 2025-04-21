@@ -65,7 +65,7 @@ int main()
 
 		for (int i = 0; i < 3; i++) old_key[i] = key[i];
 
-		if (c.isConnected())
+		if (c.IsConnected())
 		{
 			if (!c.Incoming().empty())
 			{
@@ -107,7 +107,7 @@ int main()
 		else		
 		{
 			std::cout << "Server Down\n";
-			c.bQuit = true;
+			//c.bQuit = true;
 		}
 
 	}
