@@ -3,7 +3,13 @@
 A lightweight, client-server network framework built in modern C++ using Boost.Asio. This project includes both client and server implementations, message serialization, a thread-safe queue system, and asynchronous communication primitives. Built to learn and experiment with networking concepts.
 
 ---
+## 🖥️ Design Goals:
+- Modularity: Code is structured in clearly separated components (client, server, messaging, threading, etc.).
+- Test-Driven Development (TDD): Key components are unit-tested using Google Test.
+- Continuous Improvement: The architecture allows easy extension, refactoring, and addition of new features.
+- Lifecycle-Oriented Documentation: This project simulates a real-world software development lifecycle (SDLC), starting from analysis of Software Requirements Specifications (SRS) and evolving into implementation and testing.
 
+---
 ## 🚀 Features
 
 - ✅ Asynchronous communication with Boost.Asio
