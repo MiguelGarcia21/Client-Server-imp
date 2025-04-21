@@ -36,12 +36,12 @@ A lightweight, client-server network framework built in modern C++ using Boost.A
 
 ---
 
-## 🔧Requirements:
+## 🔧 Requirements:
 
 - Boost (header-only Asio or full Boost.Asio, build)
 - GoogleTest (installed or included as submodule, build)
 
-## Testing
+## 🔬 Testing
 
 ### Test 1: Client-Server Connection (Manual test)
 
