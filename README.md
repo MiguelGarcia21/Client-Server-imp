@@ -39,7 +39,7 @@ A lightweight, client-server network framework built in modern C++ using Boost.A
 
 ### Test 1: Client-Server Connection (Manual test)
 
-📄 [View Test Details and Screenshot](docs/test1_notes.md)
+📄 [View Test Details and Screenshot](tests/test1/test1_notes.md)
 
 The first test verifies that a client can successfully establish a connection with the server. This was done using [PuTTY](https://www.putty.org/) to simulate a client. When a connection is established, the server prints the client's IP address, confirming a successful handshake.
 
@@ -48,7 +48,7 @@ The first test verifies that a client can successfully establish a connection wi
 ---
 ### Test 2: Automated Tests - Client/Server Communication (Google Test / GTest)
 
-📄 [View Test Details and Screenshot](docs/test1_notes.md)
+📄 [View Test Details and Output](tests/test2_gtest/TEST2_NOTES.md)
 
 This project includes automated tests using **Google Test (gtest)** to verify client-server communication over Boost.Asio.
 
