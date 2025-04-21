@@ -12,7 +12,6 @@ enum class CustomMsgTypes : uint32_t {
 	ServerMessage,
 };
 
-// Mock Server que guarda los mensajes recibidos
 class TestServer : public olc::net::server_interface<CustomMsgTypes> {
 public:
 	TestServer(uint16_t port) : server_interface(port) {}
@@ -41,7 +40,6 @@ public:
 	bool received_any = false;
 };
 
-// Cliente extendido
 class TestClient : public olc::net::client_interface<CustomMsgTypes> {
 public:
 	bool ConnectToLocalhost(uint16_t port) {
@@ -63,13 +61,11 @@ public:
 	}
 };
 
-// 🔁 Servidor persistente entre pruebas
 TestServer* persistent_server = nullptr;
 std::thread server_thread;
 std::atomic<bool> server_running{true};
 constexpr uint16_t test_port = 6002;
 
-// Fixture de pruebas
 class ClientServerTest : public ::testing::Test {
 protected:
 	void SetUp() override {
@@ -78,7 +74,6 @@ protected:
 	}
 };
 
-// 🧪 Tests
 TEST_F(ClientServerTest, ClientCanConnectAndDisconnect) {
 	TestClient client;
 	ASSERT_TRUE(client.ConnectToLocalhost(test_port));
@@ -111,7 +106,6 @@ TEST_F(ClientServerTest, ClientCanPingServer) {
 	EXPECT_EQ(persistent_server->last_msg_id, CustomMsgTypes::ServerPing);
 }
 
-// 🔧 Setup global del servidor
 int main(int argc, char** argv) {
 	::testing::InitGoogleTest(&argc, argv);
 
