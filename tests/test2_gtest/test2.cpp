@@ -16,8 +16,17 @@ class TestServer : public olc::net::server_interface<CustomMsgTypes> {
 public:
 	TestServer(uint16_t port) : server_interface(port) {}
 
+	bool clientConnected = false;
+    bool pingReceived = false;
+    bool broadcastReceived = false;
+
+	void ProcessMessages(int count = -1, bool wait = true) { //ensure test 3 and 4 are properly implemented
+        this->Update(count, wait);
+    }
+
 protected:
 	bool OnClientConnect(std::shared_ptr<olc::net::connection<CustomMsgTypes>> client) override {
+		clientConnected = true;
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::ServerAccept;
 		client->Send(msg);
@@ -25,14 +34,20 @@ protected:
 	}
 
 	void OnMessage(std::shared_ptr<olc::net::connection<CustomMsgTypes>> client, olc::net::message<CustomMsgTypes>& msg) override {
-		last_msg_id = msg.header.id;
-		last_received = std::chrono::system_clock::now();
-		received_any = true;
-
-		if (msg.header.id == CustomMsgTypes::ServerPing) {
-			client->Send(msg);
-		}
-	}
+        switch (msg.header.id) {
+        case CustomMsgTypes::ServerPing:
+            pingReceived = true;
+            client->Send(msg);
+            break;
+        case CustomMsgTypes::MessageAll:
+            broadcastReceived = true;
+            olc::net::message<CustomMsgTypes> response;
+            response.header.id = CustomMsgTypes::ServerMessage;
+            response << client->GetID();
+            MessageAllClients(response, client);
+            break;
+        }
+    }
 
 public:
 	CustomMsgTypes last_msg_id = CustomMsgTypes::ServerDeny;

@@ -7,6 +7,8 @@
 
 std::vector<char> vBuffer(20 * 1024);
 
+//debug & testing
+
 void GrabSomeData(boost::asio::ip::tcp::socket &socket){
     socket.async_read_some(boost::asio::buffer(vBuffer.data(), vBuffer.size()),
         [&](std::error_code ec, std::size_t length){

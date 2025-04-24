@@ -21,7 +21,7 @@ namespace olc{
 
             }
             public:
-            void CloseSocket() { // added for debug
+            void CloseSocket() { // added for bug fixing m_socket
                 if (m_socket.is_open()) {
                     m_socket.close();
                 }
