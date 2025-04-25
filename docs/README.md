@@ -115,6 +115,6 @@ This README outlines the workflow from a Scrum perspective, based on the require
 [SERVER] Stop
 [SERVER] Stop
 ```
-
+> ⚠️ **Note:** The `Read Header Fail.` logs are expected in this mock setup and do not affect test pass/fail results. This means the server recognized the disconnection of a client.
 
 
